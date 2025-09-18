@@ -1,7 +1,6 @@
 import sys
 
 def build_transitions(pattern: str, allow_overlap: bool = True):
-    """Return (transitions, plen) for a single pattern using a KMP-like automaton."""
     seq = [ch for ch in pattern.strip()]
     plen = len(seq)
 
@@ -20,18 +19,12 @@ def build_transitions(pattern: str, allow_overlap: bool = True):
         transitions[st] = {'0': nxt(st, '0'), '1': nxt(st, '1')}
 
     if not allow_overlap and plen >= 1:
-        # After accepting, take transitions as if from S0 → “non-overlap”
         transitions[plen]['0'] = transitions[0]['0']
         transitions[plen]['1'] = transitions[0]['1']
 
     return transitions, plen
 
 class StreamMultiDetector:
-    """
-    Tracks multiple patterns at once.
-    - Precomputes a DFA per pattern.
-    - On each input bit, updates states and counts.
-    """
     def __init__(self, patterns, allow_overlap=True):
         self.patterns = patterns
         self.allow_overlap = allow_overlap
@@ -56,7 +49,6 @@ class StreamMultiDetector:
                 self.counts[i] += 1
 
     def snapshot(self):
-        """Return (counts list) and (state list) for display."""
         return list(self.counts), list(self.states)
 
 def prompt_patterns():
@@ -123,7 +115,6 @@ def main():
             det = StreamMultiDetector(patterns, allow_overlap=allow_overlap)
             print("State and counts reset.")
             continue
-        # allow batch like "0100111"
         if any(ch not in "01" for ch in s):
             print("Only '0'/'1', 'show', 'reset', or empty to quit.")
             continue
