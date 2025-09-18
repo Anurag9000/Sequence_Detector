@@ -79,10 +79,10 @@ def prompt_overlap():
             return False
         print("Invalid choice. Please enter 1 or 2.")
 
-def pretty_counts(patterns, counts):
+def pretty_status(patterns, counts, states):
     parts = []
-    for p, c in zip(patterns, counts):
-        parts.append(f"{p}:{c}")
+    for p, c, s in zip(patterns, counts, states):
+        parts.append(f"{p}:{c}@{s}")
     return " | ".join(parts)
 
 def main():
@@ -99,7 +99,7 @@ def main():
     print("Stream bits live. Enter:")
     print("  - single bit 0/1")
     print("  - multiple bits like 010110")
-    print("  - 'show' to print counts")
+    print("  - 'show' to print counts and states")
     print("  - 'reset' to zero the stream state and counts")
     print("  - empty line to quit\n")
 
@@ -108,8 +108,8 @@ def main():
         if s == "":
             break
         if s.lower() == "show":
-            counts, _ = det.snapshot()
-            print("counts:", pretty_counts(patterns, counts))
+            counts, states = det.snapshot()
+            print("status:", pretty_status(patterns, counts, states))
             continue
         if s.lower() == "reset":
             det = StreamMultiDetector(patterns, allow_overlap=allow_overlap)
@@ -120,8 +120,8 @@ def main():
             continue
         for ch in s:
             det.step(ch)
-            counts, _ = det.snapshot()
-            print(pretty_counts(patterns, counts))
+            counts, states = det.snapshot()
+            print(pretty_status(patterns, counts, states))
     print("Bye.")
 
 if __name__ == "__main__":
